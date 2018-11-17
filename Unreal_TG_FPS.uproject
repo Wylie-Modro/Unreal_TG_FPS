@@ -7,7 +7,11 @@
 		{
 			"Name": "Unreal_TG_FPS",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"AIModule",
+				"Engine"
+			]
 		}
 	]
 }
