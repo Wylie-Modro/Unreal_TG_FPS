@@ -18,8 +18,8 @@ class AFirstPersonCharacter : public ACharacter
 	class USkeletalMeshComponent* Mesh1P;
 
 	/** Gun mesh: 1st person view (seen only by self) */
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	class USkeletalMeshComponent* FP_Gun;
+//	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+//	class USkeletalMeshComponent* FP_Gun;
 
 	/** Location on gun mesh where projectiles should spawn. */
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
@@ -83,7 +83,7 @@ public:
 protected:
 	
 	/** Fires a projectile. */
-	void OnFire();
+	//void OnFire();
 
 	/** Resets HMD orientation and position in VR. */
 	void OnResetVR();
@@ -138,5 +138,10 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	TSubclassOf<class AGun> GunBlueprint;
+
+private:
+	AGun* Gun;
 };
 
