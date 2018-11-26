@@ -41,15 +41,12 @@ void AGun::Tick(float DeltaTime)
 
 void AGun::OnFire()
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnFire Called"));
 	// try and fire a projectile
 	if (ProjectileClass != NULL)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Have ProjectileClass"));
 		UWorld* const World = GetWorld();
 		if (World != NULL)
 		{
-		UE_LOG(LogTemp, Warning, TEXT("Have World"));
 //			if (bUsingMotionControllers)
 //			{
 //				const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
@@ -75,18 +72,15 @@ void AGun::OnFire()
 	// try and play the sound if specified
 	if (FireSound != NULL)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Have FireSound"));
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 	}
 
 	// try and play a firing animation if specified
 	if (FireAnimation != NULL)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Have FireAnimation"));
 		// Get the animation object for the arms mesh
 		if (AnimInstance != NULL)
 		{
-		UE_LOG(LogTemp, Warning, TEXT("Have AnimInstance"));
 			AnimInstance->Montage_Play(FireAnimation, 1.f);
 		}
 	}
