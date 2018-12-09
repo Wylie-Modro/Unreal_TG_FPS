@@ -39,8 +39,19 @@ void AMannequin::BeginPlay()
 		return;
 	}
 	Gun = GetWorld()->SpawnActor<AGun>(GunBlueprint);
-	Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
-	Gun->AnimInstance = Mesh1P->GetAnimInstance();
+
+	if (IsPlayerControlled()) 
+	{
+		Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+	}
+	else 
+	{
+		Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+	}
+
+	Gun->FP_AnimInstance = Mesh1P->GetAnimInstance();
+	Gun->TP_AnimInstance = GetMesh()->GetAnimInstance();
+
 
 	if (InputComponent != NULL) {
 		InputComponent->BindAction("Fire", IE_Pressed, this, &AMannequin::PullTrigger);
@@ -64,4 +75,14 @@ void AMannequin::PullTrigger()
 	Gun->OnFire();
 }
 
+void AMannequin::UnPossessed() 
+{
+	Super::UnPossessed();
+	if (Gun == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Gun is not avalible"));
+		return;
+	}
+	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+}
 
