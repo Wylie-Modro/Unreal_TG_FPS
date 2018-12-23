@@ -17,6 +17,7 @@ struct FSpawnDetails
 };
 
 class UActorPool;
+class AInfiniteTerrainGameMode;
 
 UCLASS()
 class UNREAL_TG_FPS_API ATile : public AActor
@@ -34,13 +35,14 @@ public:
 	void PlaceAIPawns(TSubclassOf<APawn> SpawnedPawnType, int MinNumber = 1, int MaxNumber = 4, int CollisionCheckRadius = 300);
 
 	void PlaceSingleActor(TSubclassOf<AActor> SpawnedActorType, const FSpawnDetails& SpawnDetails);
-	void PlaceSingleAIPawn(TSubclassOf<APawn> SpawnedPawnType, const FSpawnDetails& SpawnDetails);
+	void PlaceSingleActor(TSubclassOf<APawn> SpawnedPawnType, const FSpawnDetails& SpawnDetails);
+
+	template<class T>
+	void RandomlyPlaceActors(TSubclassOf<T> SpawnedActorType, int MinNumber = 1, int MaxNumber = 4, int CollisionCheckRadius = 300, float MinScaleFactor = 0.5f, float MaxScaleFactor = 2.f);
 
 	bool CanSpawnAtLocation(FVector CandidiateLocation, float Radius);
 
 	bool FindEmptyLocation(FVector& EmptyLocation, float Radius);
-
-	TArray<FSpawnDetails> GenerateSpawnDetails(int MinNumber, int MaxNumber, int CollisionCheckRadius, float MinScaleFactor, float MaxScaleFactor);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Nav")
 	FVector NavMeshBoundsVolOffset;
@@ -62,5 +64,5 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Pool")
-		void SetPool(UActorPool* InPool);
+	void SetPool(UActorPool* InPool);
 };

@@ -57,29 +57,10 @@ void ATile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-
-void ATile::PlaceActors(TSubclassOf<AActor> SpawnedActorType, int MinNumber, int MaxNumber, int CollisionCheckRadius, float MinScaleFactor, float MaxScaleFactor) 
+template<class T>
+void ATile::RandomlyPlaceActors(TSubclassOf<T> SpawnedActorType, int MinNumber, int MaxNumber, int CollisionCheckRadius, float MinScaleFactor, float MaxScaleFactor)
 {
-	TArray<FSpawnDetails> ArrayOfSpawnDetails = GenerateSpawnDetails(MinNumber, MaxNumber, CollisionCheckRadius, MinScaleFactor, MaxScaleFactor);
-
-	for (FSpawnDetails SpawnDetails : ArrayOfSpawnDetails) {
-		PlaceSingleActor(SpawnedActorType, SpawnDetails);
-	}
-}
-
-void ATile::PlaceAIPawns(TSubclassOf<APawn> SpawnedPawnType, int MinNumber, int MaxNumber, int CollisionCheckRadius)
-{
-	TArray<FSpawnDetails> ArrayOfSpawnDetails = GenerateSpawnDetails(MinNumber, MaxNumber, CollisionCheckRadius, 1, 1);
-
-	for (FSpawnDetails SpawnDetails : ArrayOfSpawnDetails) {
-		PlaceSingleAIPawn(SpawnedPawnType, SpawnDetails);
-	}
-}
-
-TArray<FSpawnDetails> ATile::GenerateSpawnDetails(int MinNumber, int MaxNumber, int CollisionCheckRadius, float MinScaleFactor, float MaxScaleFactor) {
-	
 	TArray<FSpawnDetails> ArrayOfSpawnDetails;
-
 	int randomNumOfActors = FMath::RandRange(MinNumber, MaxNumber);
 
 	for (int i = 0; i < randomNumOfActors; i++)
@@ -91,12 +72,19 @@ TArray<FSpawnDetails> ATile::GenerateSpawnDetails(int MinNumber, int MaxNumber, 
 
 		if (HaveFoundEmptyLocation) {
 			SpawnDetails.YawRotation = FMath::RandRange(-180.f, 180.f);
-			ArrayOfSpawnDetails.Add(SpawnDetails);
+			PlaceSingleActor(SpawnedActorType, SpawnDetails);
 		}
-
 	}
+}
 
-	return ArrayOfSpawnDetails;
+void ATile::PlaceActors(TSubclassOf<AActor> SpawnedActorType, int MinNumber, int MaxNumber, int CollisionCheckRadius, float MinScaleFactor, float MaxScaleFactor) 
+{
+	RandomlyPlaceActors(SpawnedActorType, MinNumber, MaxNumber, CollisionCheckRadius, MinScaleFactor, MaxScaleFactor);
+}
+
+void ATile::PlaceAIPawns(TSubclassOf<APawn> SpawnedPawnType, int MinNumber, int MaxNumber, int CollisionCheckRadius)
+{
+	RandomlyPlaceActors(SpawnedPawnType, MinNumber, MaxNumber, CollisionCheckRadius, 1, 1);
 }
 
 bool ATile::FindEmptyLocation(FVector& EmptyLocation, float Radius) {
@@ -111,28 +99,31 @@ bool ATile::FindEmptyLocation(FVector& EmptyLocation, float Radius) {
 			return true;
 		}
 	}
-
 	return false;
 }
 
 void ATile::PlaceSingleActor(TSubclassOf<AActor> SpawnedActorType, const FSpawnDetails& SpawnDetails) 
 {
 	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(SpawnedActorType);
-	SpawnedActor->SetActorRelativeLocation(SpawnDetails.Location);
-	SpawnedActor->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
-	SpawnedActor->SetActorRotation(FRotator(0, SpawnDetails.YawRotation, 0));
-	SpawnedActor->SetActorRelativeScale3D(FVector(SpawnDetails.ScaleFactor));
+	if (SpawnedActor) {
+		SpawnedActor->SetActorRelativeLocation(SpawnDetails.Location);
+		SpawnedActor->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
+		SpawnedActor->SetActorRotation(FRotator(0, SpawnDetails.YawRotation, 0));
+		SpawnedActor->SetActorRelativeScale3D(FVector(SpawnDetails.ScaleFactor));
+	}
 }
 
 
-void ATile::PlaceSingleAIPawn(TSubclassOf<APawn> SpawnedPawnType, const FSpawnDetails& SpawnDetails)
+void ATile::PlaceSingleActor(TSubclassOf<APawn> SpawnedPawnType, const FSpawnDetails& SpawnDetails)
 {
 	APawn* SpawnedPawn = GetWorld()->SpawnActor<APawn>(SpawnedPawnType);
-	SpawnedPawn->SetActorRelativeLocation(SpawnDetails.Location);
-	SpawnedPawn->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
-	SpawnedPawn->SetActorRotation(FRotator(0, SpawnDetails.YawRotation, 0));
-	SpawnedPawn->SpawnDefaultController();
-	SpawnedPawn->Tags.Add(FName("Mates"));
+	if (SpawnedPawn) {
+		SpawnedPawn->SetActorRelativeLocation(SpawnDetails.Location);
+		SpawnedPawn->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
+		SpawnedPawn->SetActorRotation(FRotator(0, SpawnDetails.YawRotation, 0));
+		SpawnedPawn->SpawnDefaultController();
+		SpawnedPawn->Tags.Add(FName("Mates"));
+	}
 }
 
 

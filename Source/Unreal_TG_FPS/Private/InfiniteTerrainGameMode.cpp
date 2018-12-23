@@ -23,5 +23,14 @@ void AInfiniteTerrainGameMode::PopulateBoundsVolumePool()
 		AddToPool(*VolumeIterator);
 		++VolumeIterator;
 	}
+}
 
+void AInfiniteTerrainGameMode::IncrementScore()
+{
+	CurrentScore++;
+}
+
+int AInfiniteTerrainGameMode::GetScore() const
+{
+	return CurrentScore;
 }
