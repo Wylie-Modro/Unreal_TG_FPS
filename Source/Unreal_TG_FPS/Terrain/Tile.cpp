@@ -47,8 +47,12 @@ void ATile::BeginPlay()
 void ATile::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
-	UE_LOG(LogTemp, Warning, TEXT("EndPlay called on: %s"), *GetName());
-	Pool->Return(NavMeshBoundsVolume);
+
+	if (Pool && NavMeshBoundsVolume)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EndPlay called on: %s"), *GetName());
+		Pool->Return(NavMeshBoundsVolume);
+	}
 }
 
 // Called every frame
@@ -116,11 +120,10 @@ void ATile::PlaceSingleActor(TSubclassOf<AActor> SpawnedActorType, const FSpawnD
 
 void ATile::PlaceSingleActor(TSubclassOf<APawn> SpawnedPawnType, const FSpawnDetails& SpawnDetails)
 {
-	APawn* SpawnedPawn = GetWorld()->SpawnActor<APawn>(SpawnedPawnType);
+	FRotator Rotation = FRotator(0, SpawnDetails.YawRotation, 0);
+	APawn* SpawnedPawn = GetWorld()->SpawnActor<APawn>(SpawnedPawnType, SpawnDetails.Location, Rotation);
 	if (SpawnedPawn) {
-		SpawnedPawn->SetActorRelativeLocation(SpawnDetails.Location);
 		SpawnedPawn->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
-		SpawnedPawn->SetActorRotation(FRotator(0, SpawnDetails.YawRotation, 0));
 		SpawnedPawn->SpawnDefaultController();
 		SpawnedPawn->Tags.Add(FName("Mates"));
 	}
